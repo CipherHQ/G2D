@@ -75,6 +75,7 @@
             android:text="@string/app_black_list"
             android:textColor="@color/label_black"
             android:textSize="18sp"
+            android:onClick="onBlockAppsClick"
             app:layout_constraintBottom_toBottomOf="@+id/app_block_switch"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/pin_desc" />
@@ -84,6 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:onClick="onBlockAppsClick"
             android:layout_marginTop="2dp"
             android:fontFamily="@font/nunito"
             android:gravity="start"
@@ -92,11 +94,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/app_block_title" />
 
-        <Switch
+        <ImageView
+            android:src="@drawable/ic_right_chevron"
             android:id="@+id/app_block_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/pin_desc" />
 
@@ -129,12 +133,54 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/domain_block_title" />
 
-        <Switch
+        <ImageView
             android:id="@+id/domain_block_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_right_chevron"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/app_block_desc" />
+
+<!--        vpn settings-->
+
+        <TextView
+            android:id="@+id/vpn_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/nunito_bold"
+            android:text="@string/setup_vpn"
+            android:textColor="@color/label_black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/vpn_switch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/domain_block_desc" />
+
+        <TextView
+            android:id="@+id/vpn_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/nunito"
+            android:gravity="start"
+            android:text="@string/setup_vpn_desc"
+            android:textColor="@color/label_black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vpn_tv" />
+
+        <ImageView
+            android:src="@drawable/ic_right_chevron"
+            android:layout_marginEnd="16dp"
+            android:id="@+id/vpn_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/domain_block_desc" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

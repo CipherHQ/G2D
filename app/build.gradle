@@ -1,35 +1,86 @@
 apply plugin: 'com.android.application'
 
+
+
 android {
-    compileSdkVersion 30
-    buildToolsVersion "29.0.3"
+    compileSdkVersion = 30
+
     dataBinding {
         enabled = true
     }
+
     defaultConfig {
-        applicationId "com.app.g2d"
+        applicationId = "eu.faircode.netguard"
+        versionName = "1"
         minSdkVersion 22
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode = 1
+        archivesBaseName = "G2D-v$versionName"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+                arguments "-DANDROID_PLATFORM=android-22"
+                // https://developer.android.com/ndk/guides/cmake.html
+            }
+        }
+
+        //ndkVersion "21.0.6113669"
+        ndk {
+            // https://developer.android.com/ndk/guides/abis.html#sa
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
+    }
+
+
+    lintOptions {
+        disable 'MissingTranslation'
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled = false
+            useProguard = false
+            proguardFiles.add(file('proguard-rules.pro'))
+
+        }
+        play {
+            minifyEnabled = false
+            useProguard = false
+            proguardFiles.add(file('proguard-rules.pro'))
+        }
+        debug {
+            minifyEnabled = false
+            useProguard = false
+            proguardFiles.add(file('proguard-rules.pro'))
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // https://developer.android.com/jetpack/androidx/releases/
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    annotationProcessor 'androidx.annotation:annotation:1.1.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+    implementation 'com.google.code.gson:gson:2.6.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+
+    // https://bumptech.github.io/glide/
+    implementation('com.github.bumptech.glide:glide:4.11.0') {
+        exclude group: "com.android.support"
+    }
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 }

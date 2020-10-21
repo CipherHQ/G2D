@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<accessibility-service android:accessibilityEventTypes="typeViewClicked|typeViewFocused|typeViewLongClicked|typeViewSelected|typeWindowStateChanged"
+    android:accessibilityFeedbackType="feedbackSpoken"
+    android:notificationTimeout="100"
+    android:settingsActivity="com.example.android.apis.accessibility.TestBackActivity"
+    android:canRetrieveWindowContent="true"
+    android:accessibilityFlags="flagReportViewIds"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
+

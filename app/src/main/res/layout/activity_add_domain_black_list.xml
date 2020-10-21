@@ -71,9 +71,22 @@
             android:fontFamily="@font/nunito_bold"
             android:text="@string/add_to_my_blacklist"
             android:textAllCaps="false"
+            android:onClick="addDomain"
             android:textColor="@color/label_black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/site" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_btn" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
