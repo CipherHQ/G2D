@@ -47,7 +47,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -61,7 +60,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
@@ -74,9 +72,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
-import eu.faircode.netguard.g2d.ui.base.BaseActivitty;
+import eu.faircode.netguard.g2d.ui.base.BaseActivity;
 
-public class ActivityNetguardMain extends BaseActivitty implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ActivityNetguardMain extends BaseActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "NetGuard.Main";
 
     private boolean running = false;
@@ -680,8 +678,8 @@ public class ActivityNetguardMain extends BaseActivitty implements SharedPrefere
             if (adapter != null)
                 if (intent.hasExtra(EXTRA_CONNECTED) && intent.hasExtra(EXTRA_METERED)) {
                     ivIcon.setImageResource(Util.isNetworkActive(ActivityNetguardMain.this)
-                            ? R.drawable.ic_security_white_24dp
-                            : R.drawable.ic_security_white_24dp_60);
+                            ? R.mipmap.ic_launcher
+                            : R.mipmap.ic_launcher);
                     if (intent.getBooleanExtra(EXTRA_CONNECTED, false)) {
                         if (intent.getBooleanExtra(EXTRA_METERED, false))
                             adapter.setMobileActive();

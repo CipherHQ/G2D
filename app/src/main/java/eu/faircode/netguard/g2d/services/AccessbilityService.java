@@ -36,6 +36,7 @@ public class AccessbilityService extends AccessibilityService {
     private static final String DEVICE_ADMIN_APP = "[Device admin app]";
     private static UpdatePinViewListenner updatePinViewListenner;
     private static  final String UNINSTALL_KEY = "[Uninstall]";
+    private static String FOCUS_WINDOW = null;
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
@@ -55,11 +56,7 @@ public class AccessbilityService extends AccessibilityService {
         switch(eventType) {
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
                 Log.d(TAG, "onAccessibilityEvent: Window state changed"+accessibilityEvent.getPackageName());
-//                Log.d(TAG, "onAccessibilityEvent: " + accessibilityEvent.getSource().getChild(0).getText());
-
-
-                //windowManager.removeViewImmediate(interceptView);
-                //checkForDeviceAdminSettings(accessibilityEvent);
+                FOCUS_WINDOW = accessibilityEvent.getPackageName().toString();
                 checkForBlockApps(accessibilityEvent.getSource().getPackageName().toString());
                 break;
 
@@ -123,7 +120,7 @@ public class AccessbilityService extends AccessibilityService {
     public void checkForAccessbillitySettings(AccessibilityEvent event) {
         String eventText = event.getText().toString();
         Log.d(TAG, "checkForAccessbillitySettings: "+eventText.contains("G2D"));
-        if(eventText.contains(  "G2D" )) {
+        if(eventText.contains(  "G2D" ) && FOCUS_WINDOW != null && FOCUS_WINDOW.contains("settings")) {
             performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
             performGlobalAction(AccessbilityService.GLOBAL_ACTION_HOME);
 
@@ -142,8 +139,6 @@ public class AccessbilityService extends AccessibilityService {
 
     @Override
     public int onStartCommand (Intent intent, int flags, int startId){
-
-        // several lines of awesome code
 
         return START_STICKY;
     }

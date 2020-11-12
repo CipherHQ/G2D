@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import eu.faircode.netguard.g2d.models.AppModelJson;
 import eu.faircode.netguard.g2d.models.BlockAppList;
+import eu.faircode.netguard.g2d.models.User;
 
 
 public class LocalStore {
@@ -23,6 +24,9 @@ public class LocalStore {
     private static final String PIN = "PIN";
     private static final String AppRunning = "APP_RUNNING";
     private static final String vpnRunning = "VPN_RUNNING";
+    private static final String authTokenKey = "AUTH_TOKEN_KEY";
+    private static final String userKey = "USER_KEY";
+    private static final String domainUpdateKey = "DOMAIN_UPDATE_KEY";
 
     public static void addAppToBlockList(Context context, AppModelJson appModel) {
         Gson gson = new Gson();
@@ -195,4 +199,60 @@ public class LocalStore {
         SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         return  sharedpreferences.getBoolean(vpnRunning, false);
     }
+
+    public static void setAuthToken(Context context, String authToken) {
+        Log.d(TAG, "setAuthToken: "+authToken);
+        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+
+        editor.putString(authTokenKey, authToken);
+        editor.commit();
+    }
+
+
+    public static String getAuthToken(Context context) {
+        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        return  sharedpreferences.getString(authTokenKey, null);
+    }
+
+    public static void storeUser(Context context, User user) {
+
+        Gson gson = new Gson();
+        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        String data = gson.toJson(user, User.class);
+        editor.putString(userKey, data);
+        editor.commit();
+
+    }
+
+    public static User getUser(Context context) {
+
+        Gson gson = new Gson();
+        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String data =  sharedpreferences.getString(userKey, null);
+        return gson.fromJson(data, User.class);
+    }
+
+    public static void removeData(Context context) {
+        removePin(context);
+        setAuthToken(context, null);
+    }
+
+    public static void setDomainUpdate(Context context) {
+
+        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putBoolean(domainUpdateKey, true);
+        editor.commit();
+
+    }
+
+    public static boolean getDomainUpdate(Context context) {
+
+        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        return  sharedpreferences.getBoolean(domainUpdateKey, false);
+    }
+
+
 }

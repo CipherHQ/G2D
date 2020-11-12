@@ -5,51 +5,58 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.net.VpnService;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import eu.faircode.netguard.ActivityNetguardMain;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+
 import eu.faircode.netguard.R;
 import eu.faircode.netguard.ServiceSinkhole;
-import eu.faircode.netguard.Util;
 import eu.faircode.netguard.databinding.ActivityMainBinding;
+import eu.faircode.netguard.g2d.api.API;
+import eu.faircode.netguard.g2d.api.APIClient;
 import eu.faircode.netguard.g2d.localstore.LocalStore;
+import eu.faircode.netguard.g2d.models.Domain;
+import eu.faircode.netguard.g2d.models.RequestResponse;
+import eu.faircode.netguard.g2d.models.User;
+import eu.faircode.netguard.g2d.models.UserResponse;
 import eu.faircode.netguard.g2d.services.AccessbilityService;
-import eu.faircode.netguard.g2d.ui.base.BaseActivitty;
-import eu.faircode.netguard.g2d.util.Utils;
+import eu.faircode.netguard.g2d.ui.base.BaseActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class MainActivity extends BaseActivitty {
+public class MainActivity extends BaseActivity {
 
     String TAG = MainActivity.class.getSimpleName();
     ActivityMainBinding binding;
     private int REQUEST_CODE_ENABLE_WINDOW = 1;
     private int REQUEST_CODE_VPN = 2;
-    static boolean isAppRunning = false;
+    public static boolean isAppRunning = false;
+    boolean wasAppRunning = false;
     Intent vpnIntent;
     private AlertDialog dialogDoze = null;
     private AlertDialog dialogVpn = null;
     private boolean running = false;
     private AlertDialog dialogFirst = null;
+    private  API api = null;
+    private  UserResponse userResponse;
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -58,6 +65,7 @@ public class MainActivity extends BaseActivitty {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         super.setUpToolbar((Toolbar) binding.appBar.findViewById(R.id.toolbar), getResources().getString(R.string.app_name));
+        loadData();
         isAppRunning = LocalStore.isAppRunning(this);
 //      /  Utils.downloadHostFile(this);
         if (!Settings.canDrawOverlays(this)) {
@@ -69,14 +77,60 @@ public class MainActivity extends BaseActivitty {
         onTurn(null);
     }
 
-    public void onTurn(View view) {
+    private void loadData() {
+        showProgressdDialog(this, "Loading data, please wait..", "");
+        api = APIClient.getClient().create(API.class);
 
+        Call<UserResponse> call = api.details("Bearer " + LocalStore.getAuthToken(this));
+
+        call.enqueue(new Callback<UserResponse>() {
+
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                hideProgressDialog();
+                if(response.body() == null) {
+                    routes.navigateToSignUp(MainActivity.this);
+                    finish();
+                    return;
+                }
+                Log.d(TAG, response.body().toString());
+                userResponse = response.body();
+                if(userResponse.subscription.status.equalsIgnoreCase("Active")) {
+                    Log.d(TAG, "onResponse: "+userResponse.user.name);
+                    LocalStore.storeUser(MainActivity.this, userResponse.user);
+                    if(userResponse.user.updateDomain == 1) {
+                        Log.d(TAG, "onResponse: updating domain");
+                        loadDomains();
+                    }
+                } else {
+
+                    Toast.makeText(MainActivity.this, "Sorry, your account is suspended!", Toast.LENGTH_SHORT).show();
+                    routes.navigateToSignUp(MainActivity.this);
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                hideProgressDialog();
+                Toast.makeText(MainActivity.this, "Something went wrong, Try again.", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+
+            }
+        });
+
+
+    }
+
+    public void onTurn(View view) {
 
         if (isAppRunning) {
 
             if (LocalStore.isDeviceAdmin(this) && LocalStore.isPinActive(this) && AccessbilityService.isMyServiceRunning(this, AccessbilityService.class)) {
 
                 setAppRunning();
+                wasAppRunning = true;
 
             } else {
 
@@ -85,13 +139,13 @@ public class MainActivity extends BaseActivitty {
 
 
         } else {
-            ServiceSinkhole.stop("switch off", MainActivity.this, false);
+            if(wasAppRunning)  {
+                wasAppRunning = false;
+                routes.routeToEnterPinActivity(this, "STOP_APP");
 
+            }
             binding.imageView2.setImageDrawable(getResources().getDrawable(R.drawable.ic_switch_off));
             binding.notificationTv.setText(getResources().getString(R.string.tap_to_turn_on));
-            LocalStore.removeAppRunning(this);
-
-
         }
         isAppRunning = !isAppRunning;
     }
@@ -122,7 +176,7 @@ public class MainActivity extends BaseActivitty {
             case R.id.action_uninstall:
                 Log.d(TAG, "onOptionsItemSelected: Uninstall");
                 if (LocalStore.isPinActive(this)) {
-                    routes.routeToEnterPinActivity(this);
+                    routes.routeToEnterPinActivity(this, "UNINSTALL");
                 } else {
                     routes.unInstall(this);
                 }
@@ -132,6 +186,86 @@ public class MainActivity extends BaseActivitty {
         }
     }
 
+
+    private void loadDomains() {
+        Log.d(TAG, "loadDomains: ");
+        showProgressdDialog(this, "Loading domains, please wait..", "");
+        api = APIClient.getClient().create(API.class);
+
+        Call<List<Domain>> call = api.getDomains();
+
+        call.enqueue(new Callback<List<Domain>>() {
+
+            @Override
+            public void onResponse(Call<List<Domain>> call, Response<List<Domain>> response) {
+                Log.d(TAG, response.body().toString());
+                List<Domain> domains = response.body();
+                File hosts = new File(getFilesDir(), "hosts.txt");
+                if(!hosts.exists()) {
+                    try {
+                        hosts.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                for (Domain domain : domains) {
+                    try {
+                        String data = "0.0.0.0 "+domain.domain+"\r\n";
+                        Log.d(TAG, "onResponse: "+data);
+
+                        FileOutputStream outputStream = new FileOutputStream(getFilesDir()+"/hosts.txt", true);
+                        byte[] strToBytes = data.getBytes();
+                        outputStream.write(strToBytes);
+
+                        outputStream.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                LocalStore.setDomainUpdate(MainActivity.this);
+                setDomainUpdate();
+                hideProgressDialog();
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Domain>> call, Throwable t) {
+                hideProgressDialog();
+                Toast.makeText(MainActivity.this, "Something went wrong, Try again.", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+
+            }
+        });
+    }
+
+    private void setDomainUpdate() {
+        Call<UserResponse> call = api.setDomainUpdate("Bearer " + LocalStore.getAuthToken(this));
+
+        call.enqueue(new Callback<UserResponse>() {
+
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                hideProgressDialog();
+                Log.d(TAG, response.body().toString());
+                userResponse = response.body();
+                Log.d(TAG, "onResponse: "+userResponse.user.updateDomain);
+                LocalStore.storeUser(MainActivity.this, userResponse.user);
+
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                hideProgressDialog();
+                Toast.makeText(MainActivity.this, "Something went wrong, Try again.", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+
+            }
+        });
+
+    }
 
 
     @Override

@@ -19,10 +19,10 @@ import eu.faircode.netguard.g2d.listener.UpdatePinViewListenner;
 import eu.faircode.netguard.g2d.localstore.LocalStore;
 import eu.faircode.netguard.g2d.receivers.GDDeviceAdminReceiver;
 import eu.faircode.netguard.g2d.services.AccessbilityService;
-import eu.faircode.netguard.g2d.ui.base.BaseActivitty;
+import eu.faircode.netguard.g2d.ui.base.BaseActivity;
 
 
-public class PinProtection extends BaseActivitty implements UpdatePinViewListenner {
+public class PinProtection extends BaseActivity implements UpdatePinViewListenner {
 
     ActivityPinProtectionBinding binding;
     private int REQUEST_CODE_ENABLE_ADMIN = 0;
@@ -129,6 +129,7 @@ public class PinProtection extends BaseActivitty implements UpdatePinViewListenn
         if(LocalStore.isPinActive(this) && LocalStore.isDeviceAdmin(this) && AccessbilityService.isMyServiceRunning(this, AccessbilityService.class))
         {
             routes.navigateToMain(this);
+            finish();
         } else {
             super.onBackPressed();
         }

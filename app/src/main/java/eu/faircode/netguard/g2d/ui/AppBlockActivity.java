@@ -8,16 +8,15 @@ import android.os.Bundle;
 
 import eu.faircode.netguard.R;
 
-import eu.faircode.netguard.R;
 import eu.faircode.netguard.databinding.ActivityAppBlockBinding;
 import eu.faircode.netguard.g2d.models.AppModel;
 import eu.faircode.netguard.g2d.ui.adapter.AppsBlockAdapter;
-import eu.faircode.netguard.g2d.ui.base.BaseActivitty;
+import eu.faircode.netguard.g2d.ui.base.BaseActivity;
 import eu.faircode.netguard.g2d.util.Utils;
 
 import java.util.List;
 
-public class AppBlockActivity extends BaseActivitty {
+public class AppBlockActivity extends BaseActivity {
 
     ActivityAppBlockBinding binding;
     AppsBlockAdapter adapter;

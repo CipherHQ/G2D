@@ -8,9 +8,9 @@ import android.os.Bundle;
 
 import eu.faircode.netguard.R;
 import eu.faircode.netguard.databinding.ActivitySupportBinding;
-import eu.faircode.netguard.g2d.ui.base.BaseActivitty;
+import eu.faircode.netguard.g2d.ui.base.BaseActivity;
 
-public class SupportActivity extends BaseActivitty {
+public class SupportActivity extends BaseActivity {
 
     ActivitySupportBinding binding;
     @Override

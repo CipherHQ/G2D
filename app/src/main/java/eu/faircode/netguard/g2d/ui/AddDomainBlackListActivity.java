@@ -14,8 +14,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.faircode.netguard.R;
@@ -23,9 +26,9 @@ import eu.faircode.netguard.ServiceSinkhole;
 import eu.faircode.netguard.databinding.ActivityAddDomainBlackListBinding;
 import eu.faircode.netguard.g2d.listener.DeleteDomainListener;
 import eu.faircode.netguard.g2d.ui.adapter.WebsiteBlackListAdapter;
-import eu.faircode.netguard.g2d.ui.base.BaseActivitty;
+import eu.faircode.netguard.g2d.ui.base.BaseActivity;
 
-public class AddDomainBlackListActivity extends BaseActivitty implements DeleteDomainListener {
+public class AddDomainBlackListActivity extends BaseActivity implements DeleteDomainListener {
 
     ActivityAddDomainBlackListBinding binding;
     String TAG = AddDomainBlackListActivity.class.getSimpleName();
@@ -57,8 +60,12 @@ public class AddDomainBlackListActivity extends BaseActivitty implements DeleteD
             }
             myReader.close();
         }catch (Exception ex) {ex.printStackTrace();}
+
+        Set<String> set = new HashSet<>(domains);
+        domains.clear();
+        domains.addAll(set);
          websiteBlackListAdapter = new WebsiteBlackListAdapter(this, domains, this);
-        binding.rv.setLayoutManager(new LinearLayoutManager(this));
+         binding.rv.setLayoutManager(new LinearLayoutManager(this));
          binding.rv.setAdapter(websiteBlackListAdapter);
          websiteBlackListAdapter.notifyDataSetChanged();
          hideProgressDialog();
@@ -69,7 +76,7 @@ public class AddDomainBlackListActivity extends BaseActivitty implements DeleteD
         if(domains.contains(binding.site.getText().toString())) {
             Toast.makeText(this, "Domain already exists.", Toast.LENGTH_SHORT).show();
             return;}
-        if(validateURL(binding.site.getText().toString())) {
+        if(validateURL(binding.site.getText().toString()) && !isEmailValid(binding.site.getText().toString())) {
 
             String data = "0.0.0.0 "+binding.site.getText().toString()+"\r\n";
             Log.d(TAG, "addDomain: "+binding.site.getText().toString());
@@ -134,6 +141,12 @@ public class AddDomainBlackListActivity extends BaseActivitty implements DeleteD
         hideProgressDialog();
     }
 
+    public boolean isEmailValid(String email) {
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
     private boolean validateURL(String website) {
 
         String regex = "(www.)?([a-zA-Z0-9]+).[a-zA-Z0-9]*.[a-z]{3}.?([a-z]+)?";

@@ -7,9 +7,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.preference.EditTextPreference;
-import android.preference.TwoStatePreference;
-import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
@@ -21,10 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import eu.faircode.netguard.ActivitySettings;
 import eu.faircode.netguard.DownloadTask;
-import eu.faircode.netguard.R;
-import eu.faircode.netguard.ServiceSinkhole;
 import eu.faircode.netguard.g2d.localstore.LocalStore;
 import eu.faircode.netguard.g2d.models.AppModel;
 import eu.faircode.netguard.g2d.models.AppModelJson;
@@ -32,36 +26,68 @@ import eu.faircode.netguard.g2d.models.BlockAppList;
 
 public class Utils {
 
+    public static String pinEnterKey = "PIN_ENTER_KEY";
+    private static boolean appsLoaded = false;
+    private static List<AppModel> loadedApps = null;
+
     public static List<AppModel> getInstalledAppList(Context context) {
-        List<AppModel> list = new ArrayList<>();
-        PackageManager pm = context.getPackageManager();
-        List<ApplicationInfo> apps = pm.getInstalledApplications(0);
-        BlockAppList blockList = LocalStore.getBLockAppList(context);
-        String TAG = Utils.class.getSimpleName();
 
-        for (ApplicationInfo app: apps) {
-            String label = (String)pm.getApplicationLabel(app);
-            Drawable icon = pm.getApplicationIcon(app);
-            AppModel appModel = new AppModel();
-            appModel.setAppName(label);
-            appModel.setAppImage(icon);
-            appModel.setBlock(false);
-            appModel.setPackageName(app.packageName);
+        if(!appsLoaded) {
+            List<AppModel> list = new ArrayList<>();
+            PackageManager pm = context.getPackageManager();
+            List<ApplicationInfo> apps = pm.getInstalledApplications(0);
+            BlockAppList blockList = LocalStore.getBLockAppList(context);
+            String TAG = Utils.class.getSimpleName();
+
+            for (ApplicationInfo app: apps) {
+
+                if(!isSystemPackage(app) && !isOwnApp(app)) {
+                    String label = (String)pm.getApplicationLabel(app);
+                    Drawable icon = pm.getApplicationIcon(app);
+                    AppModel appModel = new AppModel();
+                    appModel.setAppName(label);
+                    appModel.setAppImage(icon);
+                    appModel.setBlock(false);
+                    appModel.setPackageName(app.packageName);
 
 
-            try {
-                for (AppModelJson modelJson : blockList.getList()) {
-                    if(modelJson.getAppName().equalsIgnoreCase(appModel.getAppName())) {
-                        appModel.setBlock(true);
-                    }
+                    try {
+                        for (AppModelJson modelJson : blockList.getList()) {
+                            if(modelJson.getAppName().equalsIgnoreCase(appModel.getAppName())) {
+                                appModel.setBlock(true);
+                            }
+                        }
+                    } catch (Exception ex) {}
+
+                    list.add(appModel);
                 }
-            } catch (Exception ex) {}
 
-            list.add(appModel);
+            }
+            loadedApps = list;
+            appsLoaded = true;
+            return  list;
+
+        } else {
+
+            return loadedApps;
         }
 
-        return  list;
     }
+
+    private static boolean isSystemPackage(ApplicationInfo pkgInfo) {
+
+        return (pkgInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+    }
+
+    private static boolean isOwnApp(ApplicationInfo packageInfo) {
+
+        if(packageInfo.packageName.equalsIgnoreCase("eu.faircode.netguard")) {
+            return true;
+        }
+
+        return false;
+    }
+
 
     public static void downloadHostFile(final Activity context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);

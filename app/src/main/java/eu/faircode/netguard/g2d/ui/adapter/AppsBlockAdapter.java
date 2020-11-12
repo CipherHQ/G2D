@@ -44,7 +44,7 @@ public class AppsBlockAdapter extends RecyclerView.Adapter<AppsBlockViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AppsBlockViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AppsBlockViewHolder holder, final int position) {
 
         final AppModel app = apps.get(position);
         if(app.isBlock()) {
@@ -58,6 +58,7 @@ public class AppsBlockAdapter extends RecyclerView.Adapter<AppsBlockViewHolder> 
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
+                apps.get(position).setBlock(b);
                 if(b) {
                     addToBlackList(app);
                 } else {

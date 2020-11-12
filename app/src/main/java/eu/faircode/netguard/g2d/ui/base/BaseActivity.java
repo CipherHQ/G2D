@@ -13,7 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 import eu.faircode.netguard.g2d.routes.Routes;
 
 
-public class BaseActivitty extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity {
 
     public Routes routes = Routes.getInstance();
     private ProgressDialog gdProgressDialog;

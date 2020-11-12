@@ -11,11 +11,12 @@ import eu.faircode.netguard.R;
 import eu.faircode.netguard.databinding.ActivitySettingsBinding;
 import eu.faircode.netguard.g2d.localstore.LocalStore;
 import eu.faircode.netguard.g2d.services.AccessbilityService;
-import eu.faircode.netguard.g2d.ui.base.BaseActivitty;
+import eu.faircode.netguard.g2d.ui.base.BaseActivity;
 
-public class SettingsActivity extends BaseActivitty {
+public class SettingsActivity extends BaseActivity {
 
     ActivitySettingsBinding binding;
+    private boolean pinSwitch = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +26,6 @@ public class SettingsActivity extends BaseActivitty {
          showProgressdDialog(this, "", "");
 
          initUi();
-
-
     }
 
     public void initUi() {
@@ -41,6 +40,7 @@ public class SettingsActivity extends BaseActivitty {
 
 
         if(LocalStore.isPinActive(this) && LocalStore.isDeviceAdmin(this) && AccessbilityService.isMyServiceRunning(this, AccessbilityService.class)) {
+            pinSwitch = true;
             binding.pinSwitch.setChecked(true);
         }
 
@@ -48,7 +48,7 @@ public class SettingsActivity extends BaseActivitty {
             @Override
             public void onClick(View view) {
 
-                 routes.navigateToVPNMain(SettingsActivity.this);
+                onVpn(view);
             }
         });
 
@@ -56,11 +56,7 @@ public class SettingsActivity extends BaseActivitty {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-                if(b) {
-                    routes.navigateToPinProtection(SettingsActivity.this);
-                } else {
-                    LocalStore.removePin(SettingsActivity.this);
-                }
+                onPinProtection(compoundButton);
 
             }
         });
@@ -68,8 +64,8 @@ public class SettingsActivity extends BaseActivitty {
         binding.domainBlockSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                routes.navigateToAddDomainBlacklist(SettingsActivity.this);
 
+                onDomainBlackList(view);
             }
         });
 
@@ -78,8 +74,7 @@ public class SettingsActivity extends BaseActivitty {
         binding.appBlockSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBlockAppsClick(null);
-
+                 onAppBlock(view);
             }
         });
 
@@ -88,10 +83,40 @@ public class SettingsActivity extends BaseActivitty {
         hideProgressDialog();
     }
 
+    public void onVpn(View view) {
+        routes.navigateToVPNMain(SettingsActivity.this);
 
-    public void onBlockAppsClick(View view) {
-        showProgressdDialog(this, "", "Loading your apps.");
-        routes.navigateToAppBlock(this);
-        hideProgressDialog();
     }
+    public void onAppBlock(View view) {
+
+        onBlockAppsClick(null);
+
+    }
+
+    public void onPinProtection(View view) {
+        pinSwitch = !pinSwitch;
+        if(pinSwitch) {
+            routes.navigateToPinProtection(SettingsActivity.this);
+        } else {
+            LocalStore.removePin(SettingsActivity.this);
+        }
+        binding.pinSwitch.setChecked(pinSwitch);
+
+    }
+
+    public void onDomainBlackList(View view) {
+        routes.navigateToAddDomainBlacklist(SettingsActivity.this);
+
+    }
+    public void onBlockAppsClick(View view) {
+        routes.navigateToAppBlock(this);
+    }
+
+   public void onLogout(View view) {
+
+        routes.routeToEnterPinActivity(this, "LOG_OUT");
+
+
+   }
+
 }

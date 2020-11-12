@@ -39,6 +39,7 @@
             android:text="@string/pin_protect"
             android:textColor="@color/label_black"
             android:textSize="18sp"
+            android:onClick="onPinProtection"
             app:layout_constraintBottom_toBottomOf="@+id/switch1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -51,6 +52,7 @@
             android:layout_marginTop="2dp"
             android:fontFamily="@font/nunito"
             android:gravity="start"
+            android:onClick="onPinProtection"
             android:text="@string/require_pin_when_uninstalling"
             android:textColor="@color/label_black"
             app:layout_constraintStart_toStartOf="parent"
@@ -116,6 +118,7 @@
             android:text="@string/domain_blacklist"
             android:textColor="@color/label_black"
             android:textSize="18sp"
+            android:onClick="onDomainBlackList"
             app:layout_constraintBottom_toBottomOf="@+id/domain_block_switch"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/app_block_desc" />
@@ -128,6 +131,7 @@
             android:layout_marginTop="2dp"
             android:fontFamily="@font/nunito"
             android:gravity="start"
+            android:onClick="onDomainBlackList"
             android:text="@string/block_troublesome_domain"
             android:textColor="@color/label_black"
             app:layout_constraintStart_toStartOf="parent"
@@ -157,6 +161,7 @@
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/vpn_switch"
             app:layout_constraintStart_toStartOf="parent"
+            android:onClick="onVpn"
             app:layout_constraintTop_toBottomOf="@+id/domain_block_desc" />
 
         <TextView
@@ -167,6 +172,7 @@
             android:layout_marginTop="2dp"
             android:fontFamily="@font/nunito"
             android:gravity="start"
+            android:onClick="onVpn"
             android:text="@string/setup_vpn_desc"
             android:textColor="@color/label_black"
             app:layout_constraintStart_toStartOf="parent"
@@ -181,6 +187,31 @@
             android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/domain_block_desc" />
+
+        <TextView
+            android:id="@+id/logout_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/nunito_bold"
+            android:text="@string/logout"
+            android:textColor="@color/label_black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/logout_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            android:onClick="onLogout"
+            app:layout_constraintTop_toBottomOf="@+id/vpn_desc" />
+        <ImageView
+            android:src="@drawable/ic_logout"
+            android:layout_marginEnd="16dp"
+            android:id="@+id/logout_icon"
+            android:onClick="onLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vpn_desc" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

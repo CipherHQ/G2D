@@ -34,6 +34,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -2246,7 +2247,9 @@ public class ServiceSinkhole extends VpnService implements SharedPreferences.OnS
             TypedValue tv = new TypedValue();
             getTheme().resolveAttribute(R.attr.colorPrimary, tv, true);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notify");
-            builder.setSmallIcon(R.drawable.ic_security_white_24dp)
+            builder.setSmallIcon(R.mipmap.ic_launcher)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                            R.mipmap.ic_launcher))
                     .setContentIntent(pi)
                     .setColor(tv.data)
                     .setAutoCancel(true);
@@ -2733,7 +2736,7 @@ public class ServiceSinkhole extends VpnService implements SharedPreferences.OnS
         TypedValue tv = new TypedValue();
         getTheme().resolveAttribute(R.attr.colorPrimary, tv, true);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "foreground");
-        builder.setSmallIcon(isLockedDown(last_metered) ? R.drawable.ic_lock_outline_white_24dp : R.drawable.ic_security_white_24dp)
+        builder.setSmallIcon(isLockedDown(last_metered) ? R.drawable.g2d_logo_3_24pix : R.drawable.g2d_logo_3_24pix)
                 .setContentIntent(pi)
                 .setColor(tv.data)
                 .setOngoing(true)
@@ -2797,7 +2800,7 @@ public class ServiceSinkhole extends VpnService implements SharedPreferences.OnS
         TypedValue tv = new TypedValue();
         getTheme().resolveAttribute(R.attr.colorPrimary, tv, true);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "foreground");
-        builder.setSmallIcon(R.drawable.ic_security_white_24dp)
+        builder.setSmallIcon(R.drawable.g2d_logo_3_24pix)
                 .setContentIntent(pi)
                 .setColor(tv.data)
                 .setOngoing(true)
@@ -2986,7 +2989,7 @@ public class ServiceSinkhole extends VpnService implements SharedPreferences.OnS
         TypedValue tv = new TypedValue();
         getTheme().resolveAttribute(R.attr.colorPrimary, tv, true);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notify");
-        builder.setSmallIcon(R.drawable.ic_security_white_24dp)
+        builder.setSmallIcon(R.drawable.g2d_logo_3_24pix)
                 .setContentTitle(name)
                 .setContentText(getString(R.string.msg_update))
                 .setContentIntent(pi)

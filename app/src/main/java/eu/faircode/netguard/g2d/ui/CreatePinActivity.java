@@ -11,17 +11,20 @@ import eu.faircode.netguard.R;
 import eu.faircode.netguard.databinding.ActivityCreatePinBinding;
 import eu.faircode.netguard.g2d.listener.UpdatePinViewListenner;
 import eu.faircode.netguard.g2d.localstore.LocalStore;
-import eu.faircode.netguard.g2d.ui.base.BaseActivitty;
+import eu.faircode.netguard.g2d.ui.base.BaseActivity;
+import eu.faircode.netguard.g2d.util.Utils;
 
-public class CreatePinActivity extends BaseActivitty {
+public class CreatePinActivity extends BaseActivity {
 
     ActivityCreatePinBinding binding;
     private static UpdatePinViewListenner updatePinViewListenner;
     private String firstPin = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_create_pin);
+
 
 
         binding.pin.addTextChangedListener(new TextWatcher() {

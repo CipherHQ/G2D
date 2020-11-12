@@ -23,6 +23,8 @@ import eu.faircode.netguard.g2d.ui.ResetPasswordActivity;
 import eu.faircode.netguard.g2d.ui.SettingsActivity;
 import eu.faircode.netguard.g2d.ui.SignUpActivity;
 import eu.faircode.netguard.g2d.ui.SupportActivity;
+import eu.faircode.netguard.g2d.ui.base.BaseActivity;
+import eu.faircode.netguard.g2d.util.Utils;
 
 
 public class Routes {
@@ -47,6 +49,7 @@ public class Routes {
 
     public void navigateToSignUp(Context context) {
         Intent intent = new Intent(context, SignUpActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
@@ -55,8 +58,9 @@ public class Routes {
         context.startActivity(intent);
     }
 
-    public void navigateToMain(Activity context) {
+    public void navigateToMain(BaseActivity context) {
         Intent intent = new Intent(context, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
         context.finish();
     }
@@ -99,8 +103,9 @@ public class Routes {
         context.startActivity(intent);
     }
 
-    public void routeToEnterPinActivity(Context context) {
+    public void routeToEnterPinActivity(Context context, String keyFor) {
         Intent intent = new Intent(context, EnterPinActivity.class);
+        intent.putExtra(Utils.pinEnterKey, keyFor);
         context.startActivity(intent);
     }
 
